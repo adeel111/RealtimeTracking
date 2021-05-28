@@ -1,7 +1,9 @@
 import React, {useEffect} from 'react';
 import {Platform, AppRegistry} from 'react-native';
+import moment from 'moment';
 import {Provider} from 'react-redux';
 import RNLocation from 'react-native-location';
+import {getDeviceId} from 'react-native-device-info';
 import NetInfo from '@react-native-community/netinfo';
 import firestore from '@react-native-firebase/firestore';
 import Geolocation from 'react-native-geolocation-service';
@@ -72,20 +74,39 @@ const getCurrentLocation = () => {
 };
 
 const saveLocation = (position, type = 0) => {
-  // var date = new Date().toLocaleString();
+  var datetime = new Date().toLocaleString();
+  var date = moment(datetime).format('LL');
+  var time = moment(datetime).format('LT');
+
   // console.log(date);
-  firestore()
-    .collection('Location_data')
-    .add({
-      lat: type === 0 ? position.coords.latitude : position.latitude,
-      lan: type === 0 ? position.coords.longitude : position.longitude,
-    })
-    .then(() => {
-      console.log('Record added!');
-    })
-    .catch(() => {
-      console.log('Record not added!');
+  // return;
+  const lat = type === 0 ? position.coords.latitude : position.latitude;
+  const lan = type === 0 ? position.coords.longitude : position.longitude;
+  fetch(
+    'https://maps.googleapis.com/maps/api/geocode/json?address=' +
+      lat +
+      ',' +
+      lan +
+      '&key=' +
+      'AIzaSyDDIS077iHUpAMUo_awtMtmxFJve37sSWg',
+  )
+    .then(response => response.json())
+    .then(responseJson => {
+      const userLocation = responseJson.results[0].formatted_address;
+      firestore()
+        .collection('Location_Data')
+        .doc(getDeviceId())
+        .collection(date.toString())
+        .doc(time.toString())
+        .set({latitude: lat, longitude: lan, address: userLocation})
+        .then(() => {
+          console.log('Record added!');
+        })
+        .catch(() => {
+          console.log('Record not added!');
+        });
     });
+  return;
 };
 
 const RNRedux = () => {
