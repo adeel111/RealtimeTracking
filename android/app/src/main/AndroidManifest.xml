@@ -3,10 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
       android:name=".MainApplication"
@@ -31,6 +33,8 @@
      android:value="AIzaSyDDIS077iHUpAMUo_awtMtmxFJve37sSWg"/>
 
      <!-- You will also only need to add this uses-library tag -->
+     <!-- android:foregroundServiceType="location" -->
+
      <uses-library android:name="org.apache.http.legacy" android:required="false"/>
      <service
       android:name="com.trackuser.HeartbeatService"
@@ -38,7 +42,7 @@
       android:exported="false" >
       </service>
       <service
-      android:name="com.trackuser.HeartbeatEventService">
+       android:name="com.trackuser.HeartbeatEventService" >
       </service>
      <receiver
      android:name="com.trackuser.BootUpReceiver"

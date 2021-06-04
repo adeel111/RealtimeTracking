@@ -21,7 +21,6 @@ let count = 0;
 let getLoc = 0;
 
 const MyHeadlessTask = async () => {
-  // console.log('MyHeadlessTask');
   // store.dispatch(setHeartBeat(true));
   // setTimeout(() => {
   //   store.dispatch(setHeartBeat(false));
@@ -34,6 +33,7 @@ const MyHeadlessTask = async () => {
   count++;
   if (count % 400 === 0) {
     getCurrentLocation();
+    count = 1;
   }
 };
 
@@ -47,17 +47,13 @@ const getCurrentLocation = () => {
           const offlineLocs = store.getState().AppReducer.offlineCoords;
           if (offlineLocs.length > 0) {
             for (let index = 0; index < offlineLocs?.length; index++) {
-              console.log(index);
               saveLocation(offlineLocs[index], 1);
             }
             store.dispatch(resetAction([]));
           } else {
-            console.log('else part');
             saveLocation(position);
           }
         } else {
-          const offlineLocs = store.getState().AppReducer.offlineCoords;
-          console.log(offlineLocs.length);
           store.dispatch(setOfflineCoords(position.coords));
         }
       });
@@ -78,8 +74,6 @@ const saveLocation = (position, type = 0) => {
   var date = moment(datetime).format('LL');
   var time = moment(datetime).format('LT');
 
-  // console.log(date);
-  // return;
   const lat = type === 0 ? position.coords.latitude : position.latitude;
   const lan = type === 0 ? position.coords.longitude : position.longitude;
   fetch(
@@ -123,7 +117,6 @@ const RNRedux = () => {
       }).then(granted => {
         if (granted) {
           RNLocation.subscribeToLocationUpdates(locations => {
-            console.log(locations[0]);
             store.dispatch(setCurrentCoords(locations[0]));
             saveLocation(locations[0], 1);
           });
@@ -138,6 +131,6 @@ const RNRedux = () => {
     </Provider>
   );
 };
-
+  
 AppRegistry.registerHeadlessTask('Heartbeat', () => MyHeadlessTask);
 AppRegistry.registerComponent(appName, () => RNRedux);
